@@ -1,13 +1,5 @@
--- AUDIT TRAIL: 7.1
--- 1. rk  04/07/2004
---    Whenever sqlerror continue addded in this script.
--- AUDIT TRAIL: 7.0
--- 1. rk  03/07/2004
---    Package created.
---
--- AUDIT TRAIL END
-
-CREATE OR REPLACE PACKAGE TWBCCOMN AS
+create or replace 
+PACKAGE           "TWBCCOMN" AS
 
    --
    -- FILE NAME..: twbccomn.sql
@@ -19,7 +11,7 @@ CREATE OR REPLACE PACKAGE TWBCCOMN AS
    --
    -- DESCRIPTION:
    --
-   -- Common methods for channels. 
+   -- Common methods for channels.
    --
    -- DESCRIPTION END
    --
@@ -62,7 +54,7 @@ CREATE OR REPLACE PACKAGE TWBCCOMN AS
 --
 --
 --
-   FUNCTION f_get_chnltoken(p_string_in          IN         VARCHAR2, 
+   FUNCTION f_get_chnltoken(p_string_in          IN         VARCHAR2,
                             p_num_tok            OUT        NUMBER
                             )
    RETURN pref_tab;
@@ -71,14 +63,14 @@ CREATE OR REPLACE PACKAGE TWBCCOMN AS
 --
 --
 --
-   FUNCTION f_get_linetoken(p_token_in IN VARCHAR2) 
+   FUNCTION f_get_linetoken(p_token_in IN VARCHAR2)
    RETURN VARCHAR2;
 ---------------------------------------------------------------
 --
 -- This function will test whether the preference setting is
 -- either a baseline user or an individual user.
 -- Returns either BASELINE or the actual spriden_id.
---    
+--
   FUNCTION f_get_pref_user(p_channel_name IN twgruprf.twgruprf_name%TYPE,
                            p_bannerid     IN spriden.spriden_id%TYPE,
                            p_group        IN twgruprf.twgruprf_group%TYPE,
@@ -88,7 +80,7 @@ CREATE OR REPLACE PACKAGE TWBCCOMN AS
 --
 --
 --
-   FUNCTION f_get_pref(p_bannerid               IN VARCHAR2, 
+   FUNCTION f_get_pref(p_bannerid               IN VARCHAR2,
                        p_channel_name           IN VARCHAR2)
    RETURN pref_ref;
 -------------------------------------------------------------
@@ -98,11 +90,11 @@ CREATE OR REPLACE PACKAGE TWBCCOMN AS
    FUNCTION f_del_pref_xml( p_data_token   IN VARCHAR2 )
    RETURN VARCHAR2;
 ------------------------------------------------------------
-   FUNCTION f_get_about ( p_data_token   IN VARCHAR2 ) 
+   FUNCTION f_get_about ( p_data_token   IN VARCHAR2 )
    RETURN VARCHAR2;
 
 ------------------------------------------------------------
-   FUNCTION f_get_help ( p_data_token   IN VARCHAR2  ) 
+   FUNCTION f_get_help ( p_data_token   IN VARCHAR2  )
    RETURN VARCHAR2;
 
 ----------------------------------------------------------
@@ -120,7 +112,7 @@ CREATE OR REPLACE PACKAGE TWBCCOMN AS
    RETURN VARCHAR2;
 ----------------------------------------------------------
 --
--- 
+--
 --
    FUNCTION f_getparam(p_pidm    IN    twgrwprm.twgrwprm_pidm%TYPE,
                        p_name    IN    twgrwprm.twgrwprm_param_name%TYPE)
@@ -129,24 +121,13 @@ CREATE OR REPLACE PACKAGE TWBCCOMN AS
 ----------------------------------------------------------
 --
 -- Similar to twbkfrmt.f_encodeurl.  This will replace
--- the values '&' and '<' in the string such that 
+-- the values '&' and '<' in the string such that
 -- the xml will render correctly.
---  
+--
    FUNCTION f_encodexml (string_in IN VARCHAR2)
-      RETURN VARCHAR2; 
+      RETURN VARCHAR2;
 
 ----------------------------------------------------------
 -- BOTTOM
 END TWBCCOMN;
 /
-show errors 
-SET scan ON 
-whenever sqlerror continue; 
-drop public synonym TWBCCOMN; 
-whenever sqlerror EXIT ROLLBACK; 
-CREATE public synonym TWBCCOMN FOR TWBCCOMN; 
-whenever sqlerror continue; 
-start gurgrtw TWBCCOMN
-WHENEVER SQLERROR EXIT ROLLBACK
-REM *** END OF GURMDBP MODS ***
-set scan on

@@ -1,27 +1,10 @@
---
--- AUDIT TRAIL: 7.0
--- 1. rk  03/07/2004
---    Package created.
---
--- AUDIT TRAIL: NLS_DATE_SUPPORT 
--- 1. TGKinderman   11/11/2005
---    This object was passed through a conversion process relative to preparing
---    the object to support internationalization needs.  Basically, hard coded
---    date format masks of DD-MON-YYYY are converted to a G$_DATE function that
---    returns nls_date_format.  The release number of this object was NOT
---    modified as part of this effort.  This object may or may not have had 
---    conversion process code modifications.  However, this audit trail entry
---    does indicate that the object has been passed through the conversion.
--- AUDIT TRAIL: 8.0
--- 1.  Added a new procedure p_convertclob to replace dbms_lob.substr
--- AUDIT TRAIL END
---
-CREATE OR REPLACE PACKAGE BODY TWBCMXML AS
+create or replace 
+PACKAGE BODY TWBCMXML AS
    --
    -- FILE NAME..: twbcmxm1.sql
    -- RELEASE....: 8.0
    -- OBJECT NAME: TWBCMXML
-   -- PRODUCT....: CHANNELS 
+   -- PRODUCT....: CHANNELS
    -- USAGE......: Main helper program for generating XML for channels.
    -- COPYRIGHT..: Copyright (C) SCT Corporation 2002. All rights reserved.
    --
@@ -43,7 +26,7 @@ CREATE OR REPLACE PACKAGE BODY TWBCMXML AS
 
    ---
    --
------------------------------------------------------------------------- 
+------------------------------------------------------------------------
    --
    -- Main Procedure used to format a ref_cursor
    -- into an XML CLOB.
@@ -56,21 +39,21 @@ CREATE OR REPLACE PACKAGE BODY TWBCMXML AS
                            p_grouplabel IN VARCHAR2 DEFAULT 'GROUP') IS
       queryctx    dbms_xmlgen.ctxtype;
    BEGIN
-   
+
       queryctx := dbms_xmlgen.newcontext(p_cursor_ref);
-   
+
       IF p_setlabel IS NOT NULL THEN
          dbms_xmlgen.setrowsettag(queryctx,upper(p_setlabel));
       ELSE
          dbms_xmlgen.setrowsettag(queryctx, NULL);
       END IF;
-   
+
       IF p_grouplabel IS NOT NULL THEN
          dbms_xmlgen.setrowtag(queryctx,upper(p_grouplabel));
       ELSE
          dbms_xmlgen.setrowtag(queryctx, NULL);
       END IF;
-   
+
       p_result_out := dbms_xmlgen.getxml(queryctx);
       dbms_xmlgen.closecontext(queryctx);
    END p_get_xml;
@@ -81,28 +64,28 @@ CREATE OR REPLACE PACKAGE BODY TWBCMXML AS
                            p_result_out OUT CLOB,
                            p_setlabel   IN VARCHAR2 DEFAULT NULL,
                            p_grouplabel IN VARCHAR2 DEFAULT 'GROUP') IS
-   
+
       queryctx    dbms_xmlquery.ctxtype;
       result      CLOB;
-   
+
    BEGIN
-   
+
       queryctx := dbms_xmlquery.newcontext(p_query);
       IF p_setlabel IS NOT NULL THEN
          dbms_xmlquery.setrowsettag(queryctx, upper(p_setlabel));
       ELSE
          dbms_xmlquery.setrowsettag(queryctx, NULL);
       END IF;
-   
+
       IF p_grouplabel IS NOT NULL THEN
          dbms_xmlquery.setrowtag(queryctx, upper(p_grouplabel));
       ELSE
          dbms_xmlquery.setrowtag(queryctx, NULL);
       END IF;
-   
+
       p_result_out := dbms_xmlquery.getxml(queryctx);
       dbms_xmlquery.closecontext(queryctx);
-   
+
    END p_get_xml;
    ----------------------------------------------------------------------
      PROCEDURE p_convertclob(p_result IN CLOB,my_xml OUT VARCHAR2)
@@ -125,7 +108,7 @@ CREATE OR REPLACE PACKAGE BODY TWBCMXML AS
    --
 
 
-   PROCEDURE p_appendxml    (p_final_inout IN OUT CLOB, 
+   PROCEDURE p_appendxml    (p_final_inout IN OUT CLOB,
                              p_source IN OUT CLOB) IS
    clob_length NUMBER;
    wrk_int     INTEGER;
@@ -134,7 +117,7 @@ CREATE OR REPLACE PACKAGE BODY TWBCMXML AS
    tot_len     NUMBEr;
 
    BEGIN
-   
+
       clob_length := dbms_lob.getlength(p_source);
 
 
@@ -192,7 +175,7 @@ CREATE OR REPLACE PACKAGE BODY TWBCMXML AS
    --
    --
    --
-   
+
    FUNCTION f_message_xml(p_message IN VARCHAR2 DEFAULT NULL) RETURN VARCHAR2 IS
       my_xml VARCHAR2(10000);
    BEGIN
@@ -201,34 +184,34 @@ CREATE OR REPLACE PACKAGE BODY TWBCMXML AS
       my_xml := my_xml || p_message;
       my_xml := my_xml || '</TEXT>';
       my_xml := my_xml || '</MESSAGE>';
-   
+
       RETURN my_xml;
    END f_message_xml;
 
-   ------------------------------------------------------------------ 
+   ------------------------------------------------------------------
    --
    --
    --
    PROCEDURE p_printclob(p_result IN CLOB) IS
-   
+
       result          CLOB;
       cvl_tmp         VARCHAR2(32000);
       nvl_amount      NUMBER := 255; --32000;
       nvl_pos         NUMBER := 1;
       nvl_clob_length NUMBER;
       instr_pos       NUMBER;
-   
+
       c_length NUMBER;
-   
+
    BEGIN
-   
+
       result          := p_result;
       nvl_clob_length := dbms_lob.getlength(result);
       cvl_tmp         := NULL;
       c_length        := nvl_clob_length;
       nvl_amount      := 255; --32000;
       nvl_pos         := 1;
-   
+
       LOOP
          instr_pos := nvl(dbms_lob.instr(result, chr(10), nvl_pos, 1),
                           c_length) - nvl_pos;
@@ -239,7 +222,7 @@ CREATE OR REPLACE PACKAGE BODY TWBCMXML AS
 
          IF nvl_pos + instr_pos = 0 THEN
             instr_pos := nvl_clob_length - nvl_pos;
-         
+
             dbms_lob.READ(lob_loc => result,
                           amount  => instr_pos,
                           offset  => nvl_pos,
@@ -247,7 +230,7 @@ CREATE OR REPLACE PACKAGE BODY TWBCMXML AS
             dbms_output.put_line(cvl_tmp);
             EXIT;
          END IF;
-      
+
          dbms_lob.READ(lob_loc => result,
                        amount  => instr_pos,
                        offset  => nvl_pos,
@@ -258,18 +241,18 @@ CREATE OR REPLACE PACKAGE BODY TWBCMXML AS
          --
          --
          nvl_pos := nvl_pos + instr_pos + 1;
-      
+
          IF nvl_pos > nvl_clob_length THEN
             EXIT;
          END IF;
       END LOOP;
-   
+
    END p_printclob;
 
-   ------------------------------------------------------------------------ 
+   ------------------------------------------------------------------------
    --
-   -- Alternate print procedure.  At times, there is a problem with 
-   -- the above procedure depending upon how the 
+   -- Alternate print procedure.  At times, there is a problem with
+   -- the above procedure depending upon how the
    -- last ( closing ) XML tag is entered/saved in your
    -- business logic procedure.
    --
@@ -290,37 +273,37 @@ CREATE OR REPLACE PACKAGE BODY TWBCMXML AS
       ELSE
          dbms_output.put_line(result_clob);
       END IF;
-   
+
    END p_altprintclob;
 
-   -------------------------------------------------------------------- 
+   --------------------------------------------------------------------
 
    PROCEDURE p_printstring(result_string IN VARCHAR2) IS
-   
+
       result          CLOB;
       cvl_tmp         VARCHAR2(32000);
       nvl_amount      NUMBER := 255; --32000;
       nvl_pos         NUMBER := 1;
       nvl_clob_length NUMBER;
       instr_pos       NUMBER;
-   
+
       c_length NUMBER;
-   
+
    BEGIN
-   
+
       result          := result_string;
       nvl_clob_length := dbms_lob.getlength(result);
       cvl_tmp         := NULL;
       c_length        := nvl_clob_length;
       nvl_amount      := 255; --32000;
       nvl_pos         := 1;
-   
+
       LOOP
          instr_pos := nvl(dbms_lob.instr(result, chr(10), nvl_pos, 1),
                           c_length) - nvl_pos;
          IF nvl_pos + instr_pos = 0 THEN
             instr_pos := nvl_clob_length - nvl_pos;
-         
+
             dbms_lob.READ(lob_loc => result,
                           amount  => instr_pos,
                           offset  => nvl_pos,
@@ -328,7 +311,7 @@ CREATE OR REPLACE PACKAGE BODY TWBCMXML AS
             dbms_output.put_line(cvl_tmp);
             EXIT;
          END IF;
-      
+
          dbms_lob.READ(lob_loc => result,
                        amount  => instr_pos,
                        offset  => nvl_pos,
@@ -339,15 +322,15 @@ CREATE OR REPLACE PACKAGE BODY TWBCMXML AS
          --
          --
          nvl_pos := nvl_pos + instr_pos + 1;
-      
+
          IF nvl_pos > nvl_clob_length THEN
             EXIT;
          END IF;
       END LOOP;
-   
+
    END p_printstring;
 
-   ------------------------------------------------------------------------- 
+   -------------------------------------------------------------------------
    --
    --
    --
@@ -366,9 +349,9 @@ CREATE OR REPLACE PACKAGE BODY TWBCMXML AS
    --------------------------------------------------------------------
 
    FUNCTION f_get_token_parm_val(param_name_in IN VARCHAR2,
-                                 token_in      IN VARCHAR2) 
+                                 token_in      IN VARCHAR2)
    RETURN VARCHAR2 IS
-   
+
       pos      INTEGER := 3;
       prev_pos INTEGER := 3;
       TYPE xml_tabtype IS TABLE OF VARCHAR2(2000) INDEX BY BINARY_INTEGER;
@@ -385,55 +368,55 @@ CREATE OR REPLACE PACKAGE BODY TWBCMXML AS
          j := j + 1;
       END LOOP;
       j := j - 1;
-   
+
       FOR z IN 1 .. j LOOP
          l    := instr(token_table(z), '=');
          parm := substr(token_table(z), 1, l - 1);
-      
+
          IF upper(param_name_in) = upper(parm) THEN
             return_value := substr(token_table(z),
                                    l + 1,
                                    length(token_table(z)));
          END IF;
-      
+
          -- dbms_output.put_line('l              =>' || l);
          -- dbms_output.put_line('token_table z  =>' || token_table(z));
          -- dbms_output.put_line('parm           =>' || parm);
       END LOOP;
-   
+
       RETURN return_value;
-   
+
    END f_get_token_parm_val;
 
-   -------------------------------------------------------------------- 
+   --------------------------------------------------------------------
 
    FUNCTION f_decode_name_token(param_name_in IN VARCHAR2,
-                                token_in      IN VARCHAR2) 
+                                token_in      IN VARCHAR2)
    RETURN VARCHAR2 IS
-   
+
       return_value VARCHAR2(90);
       r_pos        INTEGER;
       l_pos        INTEGER;
-   
+
    BEGIN
-   
+
       -- dbms_output.put_line('parm ' || param_name_in);
       -- dbms_output.put_line('toke ' || token_in);
-   
+
       CASE
          WHEN param_name_in = 'LAST' THEN
             r_pos := instr(token_in, ',', 1);
-         
+
             IF r_pos = 0 THEN
                return_value := substr(token_in, 1, length(token_in));
             ELSE
                return_value := substr(token_in, 1, r_pos - 1);
             END IF;
-         
+
          WHEN param_name_in = 'FIRST' THEN
             l_pos := instr(token_in, ',', 1);
             r_pos := instr(token_in, ',', 1, 2) - 1;
-         
+
             IF l_pos <> 0 THEN
                IF r_pos = -1 THEN
                   return_value := substr(token_in,
@@ -443,10 +426,10 @@ CREATE OR REPLACE PACKAGE BODY TWBCMXML AS
                   return_value := substr(token_in, l_pos + 1, r_pos - l_pos);
                END IF;
             END IF;
-         
+
          WHEN param_name_in = 'MI' THEN
             l_pos := instr(token_in, ',', 1, 2);
-         
+
             IF l_pos = 0 THEN
                return_value := NULL;
             ELSE
@@ -458,7 +441,7 @@ CREATE OR REPLACE PACKAGE BODY TWBCMXML AS
       RETURN return_value;
    END f_decode_name_token;
 
-   ---------------------------------------------------------------- 
+   ----------------------------------------------------------------
    --
    --
    -- This function came about for the the my prospects
@@ -471,16 +454,16 @@ CREATE OR REPLACE PACKAGE BODY TWBCMXML AS
    -- the string to see what button was pressed.
    --
    FUNCTION f_param_in_token_string(param_value_in IN VARCHAR2,
-                                    token_in       IN VARCHAR2) 
+                                    token_in       IN VARCHAR2)
    RETURN BOOLEAN IS
       return_value BOOLEAN DEFAULT FALSE;
       str_pos      INTEGER;
    BEGIN
-   
+
       str_pos := 1;
-   
+
       str_pos := instr(token_in, param_value_in, 1);
-      --  
+      --
       -- INSTR returns 0 if string is not found.
       --
       IF str_pos = 0 THEN
@@ -488,17 +471,16 @@ CREATE OR REPLACE PACKAGE BODY TWBCMXML AS
       ELSE
          return_value := TRUE;
       END IF;
- 
+
       RETURN return_value;
- 
+
    EXCEPTION
       WHEN no_data_found THEN
          RETURN return_value;
- 
+
    END f_param_in_token_string;
 
--------------------------------------------------------------------------- 
+--------------------------------------------------------------------------
 
 END TWBCMXML;
-/
-show errors
+ 

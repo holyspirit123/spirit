@@ -1,23 +1,6 @@
--- AUDIT TRAIL: 7.0
--- 1. rk  03/07/2004
---    Package created.
---
--- AUDIT TRAIL: NLS_DATE_SUPPORT 
--- 1. TGKinderman   11/11/2005
---    This object was passed through a conversion process relative to preparing
---    the object to support internationalization needs.  Basically, hard coded
---    date format masks of DD-MON-YYYY are converted to a G$_DATE function that
---    returns nls_date_format.  The release number of this object was NOT
---    modified as part of this effort.  This object may or may not have had 
---    conversion process code modifications.  However, this audit trail entry
---    does indicate that the object has been passed through the conversion.
--- AUDIT TRAIL: 8.0
--- 1. A new function added to convert clob to varchar2. 
--- 
--- AUDIT TRAIL END
-
-CREATE OR REPLACE PACKAGE twbcmxml AS
-
+create or replace 
+PACKAGE twbcmxml AS
+ 
    --
    -- FILE NAME..: twbcmxml.sql
    -- RELEASE....: 8.0
@@ -51,7 +34,7 @@ CREATE OR REPLACE PACKAGE twbcmxml AS
    -- p_result_out        XML in CLOB format
    -- p_setlabel          Label with with this set needs to be identified in XML
    -- p_grouplabel        Label of the group
-   --        
+   --
    --
    PROCEDURE p_get_xml(p_cursor_ref IN sys_refcursor,
                        p_result_out OUT CLOB,
@@ -69,7 +52,7 @@ CREATE OR REPLACE PACKAGE twbcmxml AS
    -- p_query             Query for which XML needs to be generated
    -- p_result_out        XML in CLOB format
    -- p_setlabel          Label with with this set needs to be identified in XML
-   -- p_grouplabel        Label of the group     
+   -- p_grouplabel        Label of the group
    --
    PROCEDURE p_get_xml(p_query      IN VARCHAR2,
                        p_result_out OUT CLOB,
@@ -83,7 +66,7 @@ CREATE OR REPLACE PACKAGE twbcmxml AS
    -- with the XML formated CLOB returned from the result set.
    --
    --
-   PROCEDURE p_appendxml(p_final_inout IN OUT CLOB, 
+   PROCEDURE p_appendxml(p_final_inout IN OUT CLOB,
                          p_source IN OUT CLOB);
 
    --
@@ -119,7 +102,7 @@ CREATE OR REPLACE PACKAGE twbcmxml AS
 
    --
    --
-   -- 
+   --
    PROCEDURE p_altprintclob(result_clob IN CLOB);
 
    --
@@ -154,14 +137,4 @@ CREATE OR REPLACE PACKAGE twbcmxml AS
 -- BOTTOM
 --
 END twbcmxml;
-/
-show errors 
-SET scan ON 
-whenever sqlerror continue; 
-drop public synonym twbcmxml; 
-whenever sqlerror EXIT ROLLBACK; 
-CREATE public synonym twbcmxml FOR twbcmxml; 
-rem ** * beginning OF gurmdbp mods ** * 
-whenever sqlerror continue 
-START gurgrtw twbcmxml 
-rem ** *END OF gurmdbp mods ** *
+ 
